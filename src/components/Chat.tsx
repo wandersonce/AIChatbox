@@ -7,7 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 
 function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat()
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api:'/api/chat',
+  })
 
   return (
     <Card className="w-[440px] h-[700px] bg-white grid grid-rows-[min-content_1fr_min_content]">
@@ -16,30 +18,39 @@ function Chat() {
       <CardDescription>Using Vercel SDK to create chat bot.</CardDescription>
     </CardHeader>
     <CardContent className="space-y-4">
-      <div className=" flex gap-3 text-slate-600 text-sm">
-        <Avatar>
-          <AvatarFallback>WC</AvatarFallback>
-          <AvatarImage src="https://github.com/wandersonce.png"/>
-        </Avatar>
-        <p className="leading-relaxed">
-          <span className="block font-bold text-slate-700">You:</span>
-          What's your opinion about JS?
-        </p>
-      </div>
-      <div className=" flex gap-3 text-slate-600 text-sm">
-      <Avatar>
-          <AvatarFallback>BG</AvatarFallback>
-          <AvatarImage src="https://i.ibb.co/G73jXss/cc6821213daaca6520ee63ac94c3180c.jpg"/>
-      </Avatar>
-      <p className="leading-relaxed">
-          <span className="block font-bold text-slate-700">BamGames AI:</span>
-          What's your opinion about JS?
-        </p>
-      </div>
+      {messages.map(message => {
+        return(
+          <div key={message.id} className=" flex gap-3 text-slate-600 text-sm">
+            {message.role === 'user' && (
+            <Avatar>
+              <AvatarFallback>WC</AvatarFallback>
+              <AvatarImage src="https://github.com/wandersonce.png"/>
+            </Avatar>
+            )}
+
+            {message.role === 'assistant' && (
+            <Avatar>
+              <AvatarFallback>BG</AvatarFallback>
+              <AvatarImage src="https://i.ibb.co/G73jXss/cc6821213daaca6520ee63ac94c3180c.jpg"/>
+            </Avatar>
+            )}
+
+          <p className="leading-relaxed">
+            <span className="block font-bold text-slate-700">
+              {message.role === 'user' ? 'You:' : 'AI'}
+            </span>
+            {message.content}
+          </p>
+        </div>
+        )
+      })}
+
     </CardContent>
-    <CardFooter className="space-x-2">
-      <Input placeholder="How can I help you?"/>
+    <CardFooter>
+      <form className="w-full flex gap-2" onSubmit={handleSubmit}>
+      <Input value={input} onChange={handleInputChange} placeholder="How can I help you?"/>
       <Button type="submit">Send</Button>
+      </form>
     </CardFooter>
   </Card>
   )
